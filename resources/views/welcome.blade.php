@@ -18,18 +18,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
 
-
-
-
-
 </head>
 
-
-
 <body id="page-top" onload="setDefaultPriceChart()">
-
-    <!-- Navigation -->
-
 
     <header class="bg-primary text-white">
         <div class="container text-center">
@@ -61,23 +52,14 @@
         </div>
     </section>
 
-
-
-
-
-    <script>
-        $(document).ready(function() {
-            // Handler for .ready() called.
-
-        });
-    </script>
     <script>
         $(function() {
             $("#start_datepicker").datepicker({
                 dateFormat: 'dd-mm-yy',
+                onSelect: function(selected) {
+                    $("#end_datepicker").datepicker("option", "minDate", selected)
+                }
             });
-            // var date = $('#start_datepicker').datepicker('getDate');
-            // date.setDate(date.getDate() - 10)
             $("#start_datepicker").datepicker("setDate", "-10");
 
             $("#end_datepicker").datepicker({
@@ -85,53 +67,30 @@
                 numberOfMonths: 2,
                 onSelect: function(selected) {
                     $("#start_datepicker").datepicker("option", "maxDate", selected)
-                },
+                }
             });
-            // var date2 = $('#start-datepicker').datepicker('getDate');
-            // console.log(date2)
-            // $('#end-datepicker').datepicker('setDate', new Date(date2.getDate()));
             $('#end_datepicker').datepicker("setDate", "today");
         });
     </script>
 
     <script>
-        function setDefaultPriceChart() {
-            getBPIAPICall()
-        }
 
-        function intializePriceChart(dates, prices) {
 
-            var ctx = $('#myChart');
-            var myLineChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: dates,
-                    datasets: [{
-                        data: prices,
-                        label: "Price",
-                        borderColor: "#3e95cd",
-                        fill: false
-                    }]
-                },
-                options: {
-                    title: {
-                        display: true,
-                        text: 'BitCoin Price Chart'
-                    }
-                }
-            });
-            
-        }
-
+        // We can also move this function to index.js, either need to hardcode the api_base_url(not recommended). Other way is to injext environment/global variables file as js in application
+        // Skiped this due to limited time
         function getBPIAPICall() {
-
             var start = $.datepicker.formatDate("yy-mm-dd", $("#start_datepicker").datepicker("getDate"))
             var end = $.datepicker.formatDate("yy-mm-dd", $("#end_datepicker").datepicker("getDate"))
+            if(start===end){
+                alert("start date and end date should not be same, Limitation of CoinDesk API");
+                return
+            }
+            var _token = $('meta[name="csrf-token"]').attr('content');
+            var api_base_url = '{{ env('API_URL') }}';
 
-            let _token = $('meta[name="csrf-token"]').attr('content');
             $.ajax({
                 type: "GET",
-                url: "http://local.bitcoin-api.com/api/coindesk/historical_bpi_data",
+                url: api_base_url + "coindesk/historical_bpi_data",
                 datatype: 'json',
                 cache: false,
                 crossDomain: false,
@@ -150,12 +109,15 @@
                 },
                 error: function() {
                     console.log('AJAX load did not work');
+                    // Show Message to User
+                    alert("Exception Handling");
                 }
             });
         }
     </script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="{{ asset('js/index.js') }}"></script>
 </body>
 
 </html>
