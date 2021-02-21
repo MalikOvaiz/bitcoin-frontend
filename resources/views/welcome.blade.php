@@ -53,29 +53,6 @@
     </section>
 
     <script>
-        $(function() {
-            $("#start_datepicker").datepicker({
-                dateFormat: 'dd-mm-yy',
-                onSelect: function(selected) {
-                    $("#end_datepicker").datepicker("option", "minDate", selected)
-                }
-            });
-            $("#start_datepicker").datepicker("setDate", "-10");
-
-            $("#end_datepicker").datepicker({
-                dateFormat: 'dd-mm-yy',
-                numberOfMonths: 2,
-                onSelect: function(selected) {
-                    $("#start_datepicker").datepicker("option", "maxDate", selected)
-                }
-            });
-            $('#end_datepicker').datepicker("setDate", "today");
-        });
-    </script>
-
-    <script>
-
-
         // We can also move this function to index.js, either need to hardcode the api_base_url(not recommended). Other way is to injext environment/global variables file as js in application
         // Skiped this due to limited time
         function getBPIAPICall() {
